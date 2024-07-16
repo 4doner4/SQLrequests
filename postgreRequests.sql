@@ -35,14 +35,14 @@ from
 				select
 					o
 				from
-					head."kipros:protocol_document"
+					head."{name_table}:protocol_document"
 					cross join jsonb_array_elements(body -> 'archive_of_the_approval_sheet' -> 'rows') as c(o)
 				where
 					(
-						head."kipros:protocol_document".body -> '__createdAt'
+						head."{name_table}:protocol_document".body -> '__createdAt'
 					) :: jsonb ->> 0 >= '${Context.data.ot!.format(' yyyy - MM - DD ')}'
 					and (
-						head."kipros:protocol_document".body -> '__createdAt'
+						head."{name_table}:protocol_document".body -> '__createdAt'
 					) :: jsonb ->> 0 <= '${Context.data.do!.format(' yyyy - MM - DD ')}'
 			) as rows
 	) AS ROWS
@@ -55,15 +55,15 @@ WHERE
 
 
 SELECT
-	(head."kipros:profile_dzo".body -> '__name') :: jsonb as ProfilDzo,
+	(head."{name_table}:profile_dzo".body -> '__name') :: jsonb as ProfilDzo,
 	(
-		head."kipros:protocol_document".body -> 'archive_of_the_approval_sheet' -> 'rows'
+		head."{name_table}:protocol_document".body -> 'archive_of_the_approval_sheet' -> 'rows'
 	) :: jsonb as ProtDoc
 FROM
 	head.tasks
 	JOIN head.bp_instances ON (head.tasks.body -> 'instance' -> '__id') :: jsonb ->> 0 = head.bp_instances.id :: text
-	JOIN head."kipros:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."kipros:profile_dzo".id :: text
-	join head."kipros:protocol_document" on head."kipros:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
+	JOIN head."{name_table}:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."{name_table}:profile_dzo".id :: text
+	join head."{name_table}:protocol_document" on head."{name_table}:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
 	JOIN head.users ON (head.tasks.body -> 'performers') :: json ->> 0 = head.users.id :: text 
 	
 -- ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -84,14 +84,14 @@ FROM
 		FROM
 			(
 				select
-					(head."kipros:protocol_document".body -> '__id') :: jsonb as ids,
-					(head."kipros:profile_dzo".body -> '__name') :: jsonb as ProfilDzo,
-					(head."kipros:protocol_document".body) :: jsonb as ProtDoc
+					(head."{name_table}:protocol_document".body -> '__id') :: jsonb as ids,
+					(head."{name_table}:profile_dzo".body -> '__name') :: jsonb as ProfilDzo,
+					(head."{name_table}:protocol_document".body) :: jsonb as ProtDoc
 				from
 					head.tasks
 					JOIN head.bp_instances ON (head.tasks.body -> 'instance' -> '__id') :: jsonb ->> 0 = head.bp_instances.id :: text
-					JOIN head."kipros:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."kipros:profile_dzo".id :: text
-					join head."kipros:protocol_document" on head."kipros:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
+					JOIN head."{name_table}:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."{name_table}:profile_dzo".id :: text
+					join head."{name_table}:protocol_document" on head."{name_table}:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
 			) as rows
 			cross join jsonb_array_elements(protdoc -> 'archive_of_the_approval_sheet' -> 'rows') as c(o)
 	) as Rows
@@ -122,11 +122,11 @@ from
 								select
 (
 										(
-											head."kipros:protocol_document".body -> 'archive_of_the_approval_sheet' ->> 'rows'
+											head."{name_table}:protocol_document".body -> 'archive_of_the_approval_sheet' ->> 'rows'
 										) :: JSONB
 									)
 								from
-									head."kipros:protocol_document"
+									head."{name_table}:protocol_document"
 								LIMIT
 									100
 							) as rows
@@ -141,19 +141,19 @@ where
 
 SELECT
 	(
-		head."kipros:protocol_document".body -> 'archive_of_the_approval_sheet'
+		head."{name_table}:protocol_document".body -> 'archive_of_the_approval_sheet'
 	) :: jsonb as archive
 FROM
-	head."kipros:protocol_document"
+	head."{name_table}:protocol_document"
 where
 	(
-		head."kipros:protocol_document".body -> 'archive_of_the_approval_sheet'
+		head."{name_table}:protocol_document".body -> 'archive_of_the_approval_sheet'
 	) :: jsonb is not null
 	AND (
-		head."kipros:protocol_document".body -> '__createdAt'
+		head."{name_table}:protocol_document".body -> '__createdAt'
 	) :: jsonb ->> 0 >= '${Context.data.ot!.format(' yyyy - MM - DD ')}'
 	AND (
-		head."kipros:protocol_document".body -> '__createdAt'
+		head."{name_table}:protocol_document".body -> '__createdAt'
 	) :: jsonb ->> 0 <= '${Context.data.do!.format(' yyyy - MM - DD ')}';
 
 -- ////////////////////////////////////////////////////////////////
@@ -173,17 +173,17 @@ from
 						select
 (
 								(
-									head."kipros:protocol_document".body -> 'archive_of_the_approval_sheet' ->> 'rows'
+									head."{name_table}:protocol_document".body -> 'archive_of_the_approval_sheet' ->> 'rows'
 								) :: JSONB
 							)
 						from
-							head."kipros:protocol_document"
+							head."{name_table}:protocol_document"
 						where
 							(
-								head."kipros:protocol_document".body -> '__createdAt'
+								head."{name_table}:protocol_document".body -> '__createdAt'
 							) :: jsonb ->> 0 >= '2021-05-27T12:18:56Z'
 							AND (
-								head."kipros:protocol_document".body -> '__createdAt'
+								head."{name_table}:protocol_document".body -> '__createdAt'
 							) :: jsonb ->> 0 <= '2022-05-27T12:18:56Z'
 					) as rows
 			) as sheet
@@ -196,10 +196,10 @@ where
 
 
 select
-	head."kipros:protocol_document".id as ids,
+	head."{name_table}:protocol_document".id as ids,
 	Sum(jsonb_array_length(o -> 'sheet_approval' -> 'rows'))
 from
-	head."kipros:protocol_document"
+	head."{name_table}:protocol_document"
 	cross join jsonb_array_elements(body -> 'archive_of_the_approval_sheet' -> 'rows') as c(o)
 GROUP BY
 (ids) 
@@ -220,19 +220,19 @@ FROM
 		FROM
 			(
 				select
-					(head."kipros:profile_dzo".body -> '__name') :: jsonb as ProfilDzo,
-					(head."kipros:protocol_document".body) :: jsonb as ProtDoc
+					(head."{name_table}:profile_dzo".body -> '__name') :: jsonb as ProfilDzo,
+					(head."{name_table}:protocol_document".body) :: jsonb as ProtDoc
 				from
 					head.tasks
 					JOIN head.bp_instances ON (head.tasks.body -> 'instance' -> '__id') :: jsonb ->> 0 = head.bp_instances.id :: text
-					JOIN head."kipros:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."kipros:profile_dzo".id :: text
-					join head."kipros:protocol_document" on head."kipros:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
+					JOIN head."{name_table}:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."{name_table}:profile_dzo".id :: text
+					join head."{name_table}:protocol_document" on head."{name_table}:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
 				where
 					(
-						head."kipros:protocol_document".body -> '__createdAt'
+						head."{name_table}:protocol_document".body -> '__createdAt'
 					) :: jsonb ->> 0 >= '${Context.data.ot!.format(' yyyy - MM - DD ')}'
 					and (
-						head."kipros:protocol_document".body -> '__createdAt'
+						head."{name_table}:protocol_document".body -> '__createdAt'
 					) :: jsonb ->> 0 <= '${Context.data.do!.format(' yyyy - MM - DD ')}'
 			) as rows
 			cross join jsonb_array_elements(protdoc -> 'archive_of_the_approval_sheet' -> 'rows') as c(o)
@@ -247,15 +247,15 @@ WHERE
 
 
 select
-	distinct (head."kipros:profile_dzo".body -> '__name') :: jsonb ->> 0 as dzo
+	distinct (head."{name_table}:profile_dzo".body -> '__name') :: jsonb ->> 0 as dzo
 from
 	head.bp_instances
-	JOIN head."kipros:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."kipros:profile_dzo".id :: text
-	join head."kipros:protocol_document" on head."kipros:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
+	JOIN head."{name_table}:profile_dzo" ON (head.bp_instances.body -> 'pasport_pk') :: json ->> 0 = head."{name_table}:profile_dzo".id :: text
+	join head."{name_table}:protocol_document" on head."{name_table}:protocol_document".id :: text = (head.bp_instances.body -> 'protokol_document') :: jsonb ->> 0
 WHERE
 	(
-		head."kipros:protocol_document".body -> '__createdAt'
+		head."{name_table}:protocol_document".body -> '__createdAt'
 	) :: jsonb ->> 0 >= '${Context.data.ot!.format(' yyyy - MM - DD ')}'
 	AND (
-		head."kipros:protocol_document".body -> '__createdAt'
+		head."{name_table}:protocol_document".body -> '__createdAt'
 	) :: jsonb ->> 0 <= '${Context.data.do!.format(' yyyy - MM - DD ')}'
